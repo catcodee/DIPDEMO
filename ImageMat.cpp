@@ -257,14 +257,31 @@ ImageMat::~ImageMat()
 	Destroy();
 }
 
+void ImageMat::FullFill(vector<CONNECTDOMAIN> &C)
+{
+	int i = 0;
+	int j = 0;
+	IMAGEDATA color;
+
+	for (auto iters1 = C.begin(); iters1 < C.end(); iters1++)
+	{
+		color.blue = unsigned char(rand());
+		color.green = unsigned char(rand());
+		color.red = unsigned char(rand());
+		for (auto iters2 = (*iters1).D.begin(); iters2 < (*iters1).D.end(); iters2++)
+		{
+			ColorMat[(*iters2).x][(*iters2).y] = color;
+
+		}
+	}
+}
 
 
 void ImageMat::FindConnectedDomain(vector<CONNECTDOMAIN> &C)
 {
 	int **LabelMat;
 	BYTE **Mat = GrayMat;
-	int Height = Height;
-	int Width = Width;
+
 	int i = 0 ;
 	int j = 0;
 	int CurrentLabelNum = 1;
@@ -283,9 +300,9 @@ void ImageMat::FindConnectedDomain(vector<CONNECTDOMAIN> &C)
 
 	for (i = 0; i < Height; i++) 
 		for (j = 0; j < Width; j++)
-			LabelMat = 0;
+			LabelMat[i][j] = 0;
 
-	for (i = 0; i < Height - 1; i++) //检查每个像素的左侧，正下和右侧
+	for (i = 1; i < Height - 1; i++) //检查每个像素的左侧，正下和右侧
 	{
 		for (j = 1; j < Width - 1; j++)
 		{
@@ -294,20 +311,21 @@ void ImageMat::FindConnectedDomain(vector<CONNECTDOMAIN> &C)
 				currentPosition.x = i;
 				currentPosition.y = j;
 				st.push(currentPosition); //压入初始点
-				while (!st.empty())
+				while (!st.empty())       
 				{
 					currentPosition = st.top();
 					st.pop();
+
 					x = currentPosition.x;
 					y = currentPosition.y;
 
 					LabelMat[x][y] = CurrentLabelNum;
 					tmpConnectDomain.D.push_back(currentPosition);
 
-					if (Mat[x - 1][y] == 255 && LabelMat[x - 1][y] == 0)
+					if (Mat[x][y - 1] == 255 && LabelMat[x][y - 1] == 0)
 					{
-						tmpPosition.x = x - 1;
-						tmpPosition.y = y;
+						tmpPosition.x = x;
+						tmpPosition.y = y - 1;
 						st.push(tmpPosition);
 					}
 					if (Mat[x][y + 1] == 255 && LabelMat[x][y + 1] == 0)
@@ -316,15 +334,23 @@ void ImageMat::FindConnectedDomain(vector<CONNECTDOMAIN> &C)
 						tmpPosition.y = y + 1;
 						st.push(tmpPosition);
 					}
-					if (Mat[x + 1][y] == 255 && LabelMat[x + 1][y] == 0)
+					if (Mat[x+1][y] == 255 && LabelMat[x+1][y] == 0)
 					{
-						tmpPosition.x = x + 1;
+						tmpPosition.x = x+1;
+						tmpPosition.y = y;
+						st.push(tmpPosition);
+					}
+					
+					if (Mat[x-1][y] == 255 && LabelMat[x-1][y] == 0)
+					{
+						tmpPosition.x = x-1;
 						tmpPosition.y = y;
 						st.push(tmpPosition);
 					}
 				}
-				
+				tmpConnectDomain.Label = CurrentLabelNum;
 				C.push_back(tmpConnectDomain);
+				tmpConnectDomain.D.clear();
 				CurrentLabelNum++;
 			}
 		}

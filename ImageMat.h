@@ -3,6 +3,7 @@
 #include<iostream>
 #include<string.h>
 #include<stdio.h>
+#include<stdlib.h>
 #include<WinGDI.h>
 #include<stack>
 #include<vector>
@@ -75,6 +76,7 @@ public:
 	IMAGEDATA GetPixelColor(int x,int y);
 	BYTE GetPixelGray(int x,int y);
 	void FindConnectedDomain(vector<CONNECTDOMAIN> &C);
+	void FullFill(vector<CONNECTDOMAIN> &C);
 	~ImageMat();
 
 };

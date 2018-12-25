@@ -304,13 +304,17 @@ void CDIPdemoDlg::OnBnClickedDebug()
 	// TODO: 在此添加控件通知处理程序代码
 	char str[100] = {0};
 	char filename[100] = "E:/CPP/test.bmp";
+	vector<CONNECTDOMAIN> C;
 	m_image.Load(filename);
 	HBITMAP handles = m_image.GetHBitmap();
 	BITMAP bm ;
 	GetObject(handles,sizeof(bm),&bm);
 	ImageMat mat(bm);
 
-	
+	mat.Color2Gray();
+
+	mat.FindConnectedDomain(C);
+	mat.FullFill(C);
 	//IMAGEDATA p = mat.GetPixelColor(0,1);
 	mat.BmpSave("E:/CPP/output.bmp",0);
 
